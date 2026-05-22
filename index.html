@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DBTI 狗格测试</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.86em' font-size='88'%3ED%3C/text%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --ink: #24232a;
+        --muted: #6a6470;
+        --paper: #f4edf2;
+        --card: rgba(255, 253, 248, 0.92);
+        --line: rgba(36, 35, 42, 0.13);
+        --purple: #7e6096;
+        --mint: #a9d9c9;
+        --yellow: #dfbd52;
+        --coral: #db7f78;
+        --blue: #5b9bb2;
+        --shadow: 0 22px 58px rgba(49, 42, 57, 0.18);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        font-family:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        letter-spacing: 0;
+        background:
+          linear-gradient(160deg, rgba(126, 96, 150, 0.18), transparent 34%),
+          linear-gradient(24deg, rgba(169, 217, 201, 0.36), transparent 40%),
+          linear-gradient(180deg, rgba(223, 189, 82, 0.14), transparent 62%),
+          var(--paper);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        cursor: pointer;
+      }
+
+      .app {
+        width: min(960px, calc(100% - 28px));
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 24px 0;
+      }
+
+      .screen {
+        display: none;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      .poster {
+        min-height: calc(100vh - 48px);
+        display: grid;
+        place-items: center;
+      }
+
+      .poster-copy {
+        position: relative;
+        width: min(620px, 100%);
+        padding: 36px 24px 24px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background:
+          radial-gradient(circle at 88% 16%, rgba(223, 189, 82, 0.24), transparent 22%),
+          radial-gradient(circle at 10% 90%, rgba(169, 217, 201, 0.34), transparent 24%),
+          linear-gradient(135deg, rgba(255, 255, 255, 0.72), transparent),
+          var(--card);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .poster-copy::before,
+      .poster-copy::after {
+        content: "";
+        position: absolute;
+        width: 58px;
+        height: 18px;
+        border: 1px solid rgba(36, 35, 42, 0.08);
+        background: rgba(255, 255, 255, 0.56);
+        box-shadow: 0 8px 18px rgba(49, 42, 57, 0.1);
+      }
+
+      .poster-copy::before {
+        top: -10px;
+        left: 28px;
+        transform: rotate(-8deg);
+      }
+
+      .poster-copy::after {
+        right: 34px;
+        bottom: -8px;
+        transform: rotate(7deg);
+      }
+
+      .poster-mark {
+        position: absolute;
+        top: 24px;
+        right: 22px;
+        display: grid;
+        width: 74px;
+        height: 74px;
+        place-items: center;
+        border: 2px dashed rgba(126, 96, 150, 0.36);
+        border-radius: 50%;
+        color: var(--purple);
+        background: rgba(255, 253, 248, 0.6);
+        font-size: 20px;
+        font-weight: 1000;
+        transform: rotate(9deg);
+      }
+
+      .pin {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: #4d4656;
+        background: rgba(255, 255, 255, 0.7);
+        font-size: 13px;
+        font-weight: 850;
+        box-shadow: 0 8px 20px rgba(49, 42, 57, 0.08);
+      }
+
+      .poster h1 {
+        margin: 20px 0 12px;
+        font-size: clamp(48px, 8vw, 92px);
+        line-height: 0.92;
+        letter-spacing: 0;
+      }
+
+      .designer {
+        margin: 16px 0 0;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        color: var(--purple);
+        font-size: 13px;
+        font-weight: 950;
+        text-align: right;
+      }
+
+      .lead {
+        max-width: 460px;
+        margin: 0 0 22px;
+        color: #514b55;
+        font-size: 17px;
+        line-height: 1.75;
+      }
+
+      .start-card {
+        max-width: none;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--card);
+        box-shadow: var(--shadow);
+      }
+
+      .name-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .name-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .name-row input {
+        min-width: 0;
+        flex: 1;
+        height: 48px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--ink);
+        background: #fffdf8;
+        outline: 0;
+        font-weight: 850;
+      }
+
+      .primary-btn,
+      .ghost-btn {
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 8px;
+        font-weight: 950;
+      }
+
+      .primary-btn {
+        color: #fff;
+        background: var(--ink);
+        box-shadow: 0 14px 26px rgba(36, 35, 42, 0.22);
+      }
+
+      .primary-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.42;
+        box-shadow: none;
+      }
+
+      .ghost-btn {
+        color: #5f5962;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .quiz-shell,
+      .result-shell {
+        min-height: calc(100vh - 48px);
+        display: grid;
+        place-items: center;
+      }
+
+      .quiz-card,
+      .result-card {
+        width: min(720px, 100%);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--card);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .counter {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .meter {
+        width: 172px;
+        height: 9px;
+        padding: 2px;
+        border-radius: 6px;
+        background: #e9e0d5;
+      }
+
+      .meter span {
+        display: block;
+        width: var(--progress, 0%);
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--coral), var(--yellow), var(--mint));
+        transition: width 180ms ease;
+      }
+
+      .quiz-body {
+        padding: 24px;
+      }
+
+      .kicker {
+        margin-bottom: 14px;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 1000;
+        letter-spacing: 0.08em;
+      }
+
+      .question {
+        margin: 0;
+        font-size: clamp(26px, 5vw, 44px);
+        line-height: 1.12;
+      }
+
+      .hint {
+        margin: 12px 0 20px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.65;
+      }
+
+      .answers {
+        display: grid;
+        gap: 12px;
+      }
+
+      .answer {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 12px;
+        align-items: start;
+        min-height: 88px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        color: var(--ink);
+        text-align: left;
+        background: #fffdf8;
+        box-shadow: 0 10px 22px rgba(49, 42, 57, 0.07);
+        transition: 160ms ease;
+      }
+
+      .answer:hover,
+      .answer.selected {
+        transform: translateY(-2px);
+        border-color: rgba(126, 96, 150, 0.58);
+        box-shadow: 0 16px 30px rgba(49, 42, 57, 0.12);
+      }
+
+      .answer.selected {
+        background: #f3ecf6;
+        outline: 3px solid rgba(126, 96, 150, 0.13);
+      }
+
+      .answer em {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 50%;
+        color: #fff;
+        background: var(--purple);
+        font-style: normal;
+        font-size: 14px;
+        font-weight: 1000;
+      }
+
+      .answer strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 17px;
+      }
+
+      .answer span {
+        display: block;
+        color: #655f66;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .result-card {
+        width: min(620px, 100%);
+        display: block;
+      }
+
+      .result-media {
+        margin: 16px 0 18px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #f2eaf3;
+      }
+
+      .result-media img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: 12px;
+        object-fit: cover;
+        background: #fffdf8;
+        box-shadow: 0 16px 30px rgba(49, 42, 57, 0.16);
+      }
+
+      .result-copy {
+        padding: 28px;
+      }
+
+      .result-dog {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .result-code {
+        display: block;
+        width: fit-content;
+        margin-bottom: 12px;
+        padding: 8px 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--blue);
+        background: rgba(255, 255, 255, 0.7);
+        font-size: clamp(34px, 8vw, 56px);
+        font-weight: 1000;
+        letter-spacing: 0.06em;
+      }
+
+      .result-title {
+        margin: 0;
+        font-size: clamp(42px, 8vw, 76px);
+        line-height: 0.95;
+      }
+
+      .verdict {
+        margin: 0;
+        color: #2e2931;
+        font-size: clamp(20px, 4vw, 30px);
+        line-height: 1.32;
+        font-weight: 950;
+      }
+
+      .result-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .result-actions button {
+        flex: 1;
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 20px;
+        z-index: 5;
+        transform: translate(-50%, 16px);
+        padding: 12px 16px;
+        border-radius: 8px;
+        color: #fff;
+        background: var(--ink);
+        opacity: 0;
+        pointer-events: none;
+        transition: 180ms ease;
+        font-size: 14px;
+        font-weight: 850;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      .share-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: none;
+        place-items: center;
+        padding: 18px;
+        background: rgba(36, 35, 42, 0.48);
+        backdrop-filter: blur(10px);
+      }
+
+      .share-modal.show {
+        display: grid;
+      }
+
+      .share-panel {
+        width: min(420px, 100%);
+        max-height: calc(100vh - 36px);
+        display: grid;
+        gap: 12px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        border-radius: 16px;
+        background: #fffdf8;
+        box-shadow: 0 26px 70px rgba(20, 18, 24, 0.3);
+      }
+
+      .share-panel h3 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.25;
+      }
+
+      .share-panel p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .share-preview {
+        width: 100%;
+        max-height: min(62vh, 560px);
+        border-radius: 12px;
+        object-fit: contain;
+        background: #f4edf2;
+        box-shadow: 0 16px 34px rgba(49, 42, 57, 0.14);
+      }
+
+      .share-modal-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .share-modal-actions .ghost-btn {
+        background: #fff;
+      }
+
+      .share-modal-actions #closeShareBtn {
+        grid-column: 1 / -1;
+      }
+
+      @media (max-width: 820px) {
+        .app {
+          width: min(100% - 22px, 560px);
+          padding: 14px 0 22px;
+        }
+
+        .poster {
+          min-height: calc(100vh - 28px);
+        }
+
+        .poster-copy {
+          padding: 28px 16px 18px;
+        }
+
+        .poster-mark {
+          top: 18px;
+          right: 14px;
+          width: 58px;
+          height: 58px;
+          font-size: 16px;
+        }
+
+        .poster h1 {
+          font-size: clamp(46px, 15vw, 68px);
+        }
+
+        .lead {
+          font-size: 15px;
+        }
+
+        .name-row {
+          flex-direction: column;
+        }
+
+        .quiz-shell,
+        .result-shell {
+          min-height: auto;
+        }
+
+        .quiz-body {
+          padding: 18px;
+        }
+
+        .topbar {
+          padding: 14px;
+        }
+
+        .meter {
+          width: 118px;
+        }
+
+        .answer {
+          grid-template-columns: 30px 1fr;
+          min-height: 78px;
+          padding: 14px;
+          gap: 10px;
+        }
+
+        .answer em {
+          width: 30px;
+          height: 30px;
+        }
+
+        .nav,
+        .result-actions {
+          position: sticky;
+          bottom: 0;
+          margin: 18px -18px -18px;
+          padding: 12px 18px;
+          border-top: 1px solid var(--line);
+          background: rgba(255, 253, 248, 0.92);
+          backdrop-filter: blur(14px);
+        }
+
+        .result-media {
+          margin: 14px 0 16px;
+          padding: 10px;
+        }
+
+        .result-media img {
+          max-height: 44vh;
+          object-fit: contain;
+        }
+
+        .result-copy {
+          padding: 20px;
+        }
+
+        .result-actions {
+          margin: 20px -20px -20px;
+        }
+
+        .share-modal {
+          padding: 10px;
+          align-items: end;
+        }
+
+        .share-panel {
+          max-height: calc(100vh - 20px);
+        }
+
+        .share-preview {
+          max-height: 58vh;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .app {
+          width: min(100% - 16px, 420px);
+        }
+
+        .poster h1 {
+          font-size: 44px;
+        }
+
+        .question {
+          font-size: 25px;
+        }
+
+        .answer strong {
+          font-size: 16px;
+        }
+
+        .answer span {
+          font-size: 13px;
+        }
+
+        .result-title {
+          font-size: 44px;
+        }
+
+        .verdict {
+          font-size: 19px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="screen active" id="homeScreen">
+        <div class="poster">
+          <div class="poster-copy">
+            <div class="poster-mark" aria-hidden="true">DBTI</div>
+            <div class="pin">DBTI 狗格测试</div>
+            <h1>DBTI<br />狗格测试</h1>
+            <p class="lead">
+              输入你家狗的名字，做 10 道不太正经的题。测完你会得到一张狗格判词图，适合发给朋友一起审判。
+            </p>
+            <div class="start-card">
+              <label class="name-label" for="dogNameInput">先交代一下狗狗姓名</label>
+              <div class="name-row">
+                <input id="dogNameInput" maxlength="12" placeholder="比如：土豆" autocomplete="off" />
+                <button class="primary-btn" id="startBtn" type="button">点击测试</button>
+              </div>
+            </div>
+            <p class="designer">Designed by @独居饲养员少卿</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="quizScreen">
+        <div class="quiz-shell">
+          <article class="quiz-card">
+            <div class="topbar">
+              <div class="counter" id="counter">第 1 / 10 题</div>
+              <div class="meter" aria-hidden="true"><span id="meter"></span></div>
+            </div>
+            <div class="quiz-body">
+              <div class="kicker" id="kicker">维度已隐藏 · DOG 01</div>
+              <h2 class="question" id="question"></h2>
+              <p class="hint" id="hint"></p>
+              <div class="answers" id="answers"></div>
+              <div class="nav">
+                <button class="ghost-btn" id="backBtn" type="button">上一题</button>
+                <button class="primary-btn" id="nextBtn" type="button" disabled>下一题</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="resultScreen">
+        <div class="result-shell">
+          <article class="result-card" id="shareCard">
+            <div class="result-copy">
+              <p class="result-dog" id="resultDog">你的狗</p>
+              <div class="result-code" id="resultCode">CODE</div>
+              <h2 class="result-title" id="resultName">狗格</h2>
+              <div class="result-media">
+                <img id="resultImage" alt="狗格结果图" />
+              </div>
+              <p class="verdict" id="resultVerdict">判词</p>
+              <div class="result-actions">
+                <button class="primary-btn" id="shareBtn" type="button">分享给你的狗</button>
+                <button class="ghost-btn" id="againBtn" type="button">重新测试</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="toast">已生成分享图。</div>
+    <div class="share-modal" id="shareModal" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+      <div class="share-panel">
+        <h3 id="shareTitle">你的狗格海报已生成</h3>
+        <p>长按图片或点击保存，把这张判词发给你的狗看。</p>
+        <img class="share-preview" id="sharePreview" alt="DBTI 分享海报预览" />
+        <div class="share-modal-actions">
+          <button class="primary-btn" id="savePosterBtn" type="button">保存海报</button>
+          <button class="ghost-btn" id="copyTextBtn" type="button">复制判词</button>
+          <button class="ghost-btn" id="closeShareBtn" type="button">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const resultImages = {
+        "yes or no": "assets/results/yes-or-no.png",
+        "502": "assets/results/502.png",
+        drama: "assets/results/drama.png",
+        momo: "assets/results/momo.png",
+        Zzzzz: "assets/results/Zzzzz.png",
+        emo: "assets/results/emo.png",
+        dad: "assets/results/dad.png",
+        salty: "assets/results/salty.png",
+        social: "assets/results/social.png",
+        lazy: "assets/results/lazy.png",
+        taotie: "assets/results/taotie.png",
+        "404 Not Found": "assets/results/404-not-found.png",
+        Vme50: "assets/results/Vme50.png",
+        guard: "assets/results/guard.png",
+        8080: "assets/results/8080.png",
+        shift: "assets/results/shift.png",
+      };
+
+      const types = {
+        "yes or no": {
+          name: "博士狗",
+          verdict: "你家狗不是宠物，是戴博士帽的 yes/no 判题机。你负责编海龟汤，它负责伸爪审批案情。",
+        },
+        "502": {
+          name: "粘人精",
+          verdict: "你家狗疑似被 502 粘在你身上。你去哪它去哪，隐私已经被狗毛覆盖。",
+        },
+        drama: {
+          name: "影帝狗",
+          verdict: "没受什么苦，但已经演完了一生的委屈。洗澡像诀别，剪指甲像颁奖礼落选。",
+        },
+        momo: {
+          name: "神秘狗",
+          verdict: "你家明明有狗，但经常像没加载出来。它不是失踪，它是在用 momo 面具旁观人类失败。",
+        },
+        Zzzzz: {
+          name: "睡狗",
+          verdict: "一天 24 小时，它能睡出 25 小时。不开饭的世界，不值得它开机。",
+        },
+        emo: {
+          name: "焦虑狗",
+          verdict: "你离开一秒，它已经脑补弃养全流程。门一关，狗生自动进入苦情频道。",
+        },
+        dad: {
+          name: "最严厉的父亲",
+          verdict: "它不是你养的狗，是你爹。你几点回家、摸了谁、为什么还不睡，都归它管。",
+        },
+        salty: {
+          name: "醋坛子",
+          verdict: "它不是吃醋，它是抱着陈醋坛子吨吨吨。你裤腿上一根陌生狗毛，够它审三天。",
+        },
+        social: {
+          name: "社交悍匪",
+          verdict: "见人就贴，见狗就冲。它不是社牛，是带着你强行拓展不想要的人脉。",
+        },
+        lazy: {
+          name: "地缚灵犬",
+          verdict: "你以为牵的是狗，其实牵的是一块有呼吸的门垫。运动对它来说属于过度装修。",
+        },
+        taotie: {
+          name: "饕餮",
+          verdict: "它的世界观很简单：存在即零食。能吃的吃，不能吃的也先含着研究。",
+        },
+        "404 Not Found": {
+          name: "撒手没",
+          verdict: "绳子一松，你的狗就进入 404。爱你是真的，听不见也是真的，前面有烤肠更是真的。",
+        },
+        Vme50: {
+          name: "记仇小狗",
+          verdict: "它不是小气，是账本型人格。少给一口肉，明天就 V 你 50 看病。",
+        },
+        guard: {
+          name: "小区保安",
+          verdict: "它没有工资，但很有编制感。楼道一响，立刻启动全小区反恐预案。",
+        },
+        8080: {
+          name: "拆迁队长",
+          verdict: "大锤 80，小锤 40。它不是拆家，是把精装房改成毛坯体验馆。",
+        },
+        shift: {
+          name: "便便收集者",
+          verdict: "它的口味已经抵达人类文明无法评价的地方。你多犹豫一秒，它就多一口人生体验。",
+        },
+      };
+
+      const traitProfiles = {
+        "yes or no": { brain: 10, control: 7, calm: 3 },
+        "502": { cling: 14, anxious: 5, social: 2 },
+        drama: { drama: 10, anxious: 5, grudge: 2 },
+        momo: { stealth: 10, calm: 5, lazy: 2 },
+        Zzzzz: { sleep: 16, lazy: 8, calm: 2 },
+        emo: { anxious: 13, cling: 6, drama: 4 },
+        dad: { control: 12, guard: 5, calm: 2 },
+        salty: { jealous: 7, grudge: 3, cling: 2 },
+        social: { social: 18, energy: 6, cling: 2 },
+        lazy: { lazy: 15, sleep: 8, calm: 4 },
+        taotie: { food: 12, jealous: 3, energy: 1 },
+        "404 Not Found": { escape: 10, energy: 5, social: 2 },
+        Vme50: { grudge: 8, drama: 5, stealth: 2 },
+        guard: { guard: 9, control: 5, brain: 2 },
+        8080: { destroy: 9, escape: 3, chaos: 2 },
+        shift: { food: 8, chaos: 2, destroy: 5, escape: 4 },
+      };
+
+      const questions = [
+        {
+          q: "你的狗逛公园时，突然飘来一阵陌生的香味，它会？",
+          hint: "香味可能来自小吃摊、其他狗、花丛，总之是未知诱惑",
+          a: [
+            { title: "先原地嗅半天，确认来源和安全性再动", desc: "像个严谨的安检员，不摸清底细绝不踩雷", traits: { brain: 4, guard: 2, calm: 1 } },
+            { title: "直接冲过去，不管是不是自己的地盘", desc: "主打一个勇闯天涯，香味在哪，狗就在哪", traits: { social: 4, escape: 2, energy: 1 } },
+            { title: "闻两下就躺平，反正不如回家睡觉香", desc: "诱惑都是浮云，能躺着绝不站着", traits: { sleep: 4, lazy: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "你给狗准备了新窝，它第一反应是？",
+          hint: "新窝软乎乎，但它可能有自己的小脾气",
+          a: [
+            { title: "绕着新窝转三圈，用爪子扒拉检查", desc: "像验收新房的监理，犄角旮旯都得摸一遍", traits: { control: 4, brain: 2, calm: 1 } },
+            { title: "立刻钻进去，还扒拉你让你摸它显摆", desc: "新窝+贴贴=狗生巅峰，必须让你夸夸", traits: { cling: 4, social: 2, energy: 1 } },
+            { title: "看都不看，继续蹲在旧拖鞋上", desc: "旧拖鞋才是本命，新窝都是花里胡哨的摆设", traits: { lazy: 4, stealth: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "家里来了陌生的小奶狗，你的狗会？",
+          hint: "小奶狗会凑过来贴贴，也可能抢玩具",
+          a: [
+            { title: "把玩具全藏起来，还斜眼看小奶狗", desc: "我的玩具我的家，休想分走半分宠爱", traits: { jealous: 4, grudge: 2, guard: 1 } },
+            { title: "主动凑过去舔毛，带着小奶狗满家跑", desc: "主打一个社交大佬，新朋友必须罩着", traits: { social: 4, destroy: 2, energy: 1 } },
+            { title: "默默躲到沙发底，等小奶狗走了才出来", desc: "社交恐惧犯了，先隐身到客人走为止", traits: { stealth: 4, anxious: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "你假装要抢它正在啃的骨头，它会？",
+          hint: "不是真抢，就伸下手假装拿",
+          a: [
+            { title: "立刻叼着骨头跑，还委屈哼唧", desc: "戏精上线，仿佛你要抢的是它的狗命", traits: { drama: 4, anxious: 2, cling: 1 } },
+            { title: "把骨头往你手里塞，好像在说“给你给你”", desc: "主打一个大气，骨头哪有贴着你香", traits: { social: 4, cling: 2, energy: 1 } },
+            { title: "纹丝不动，用眼神警告你“敢碰试试”", desc: "家庭地位这块，骨头就是底线", traits: { control: 4, guard: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "出门遛弯，你说“回家啦”，它的反应是？",
+          hint: "就算玩嗨了，也逃不过“回家”两个字",
+          a: [
+            { title: "假装没听见，扭头往反方向冲", desc: "外面的世界太精彩，回家是不可能的", traits: { escape: 4, destroy: 2, energy: 1 } },
+            { title: "立刻贴你腿边，巴不得马上进门", desc: "只要跟着你，在哪都是家", traits: { cling: 4, anxious: 2, calm: 1 } },
+            { title: "走两步躺地上，拖都拖不动", desc: "遛弯已经耗尽元气，就地躺平等抬走", traits: { lazy: 4, sleep: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "你在厨房偷偷吃零食，它会？",
+          hint: "狗的鼻子比你的良心还灵",
+          a: [
+            { title: "扒着厨房门哼唧，直到你分它一口", desc: "主打一个坚持不懈，吃的必须有我的份", traits: { food: 4, jealous: 2, energy: 1 } },
+            { title: "蹲在客厅假装没看见，但耳朵一直竖着", desc: "表面佛系，实则记小本本：你偷吃不带我", traits: { grudge: 4, stealth: 2, calm: 1 } },
+            { title: "直接趴在厨房门口睡觉，吃的没睡香", desc: "零食哪有睡觉香，除非你喂到我嘴边", traits: { sleep: 4, lazy: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "下雨天不能出门，你的狗会？",
+          hint: "雨点打窗户，狗生emo时刻",
+          a: [
+            { title: "趴在窗边叹气，时不时扒拉窗户", desc: "emo到极致，仿佛窗外的雨都是它的眼泪", traits: { anxious: 4, drama: 2, cling: 1 } },
+            { title: "在家疯狂拆纸巾，把沙发垫扒下来玩", desc: "精力没处撒，拆家就是下雨天的浪漫", traits: { destroy: 4, escape: 2, chaos: 1 } },
+            { title: "蜷在你脚边睡觉，下雨和它没关系", desc: "有你的脚边就是避风港，睡就完事了", traits: { sleep: 4, cling: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "你带狗去陌生的草地，地上有落叶、树枝、零食包装袋，它先碰哪个？",
+          hint: "陌生环境，暴露真实狗性",
+          a: [
+            { title: "先碰零食包装袋，不管能不能吃先闻半天", desc: "干饭魂刻进DNA，任何包装都不能放过", traits: { food: 4, brain: 2, chaos: 1 } },
+            { title: "叼起树枝满草地跑，追着风玩", desc: "追风少年上线，树枝就是我的屠龙刀", traits: { social: 4, escape: 2, energy: 1 } },
+            { title: "扒拉落叶躲进去，只露个脑袋观察", desc: "先隐身侦查，确认安全再出来耍", traits: { stealth: 4, guard: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "你给狗梳毛时，它突然被梳子夹了一下毛，反应是？",
+          hint: "轻微疼，但足够它表演了",
+          a: [
+            { title: "立刻跳开，委屈叫半天还躲着你", desc: "影帝级表演，夹毛的疼能记一辈子", traits: { drama: 4, grudge: 2, anxious: 1 } },
+            { title: "晃晃脑袋，继续凑过来让你梳", desc: "这点小疼算啥，贴贴才是最重要的", traits: { social: 4, cling: 2, energy: 1 } },
+            { title: "躺地上不动，随便你梳，夹到也懒得吱声", desc: "懒到极致，疼也懒得挪窝", traits: { lazy: 4, sleep: 2, calm: 1 } },
+          ],
+        },
+        {
+          q: "半夜你起夜喝水，你的狗会？",
+          hint: "深夜行为，藏着最真实的狗格",
+          a: [
+            { title: "立刻醒过来，跟着你到客厅盯着你喝", desc: "家庭监控员上线，你的一举一动都要管", traits: { control: 4, guard: 2, calm: 1 } },
+            { title: "翻个身继续睡，你走你的它睡它的", desc: "睡眠大于一切，天塌了也得先睡够", traits: { sleep: 4, lazy: 2, calm: 1 } },
+            { title: "醒过来哼唧，要你摸它两下才肯睡", desc: "半夜也要贴贴，少摸一下都emo", traits: { anxious: 4, cling: 2, drama: 1 } },
+          ],
+        },
+      ];
+
+      const state = {
+        dogName: "",
+        index: 0,
+        answers: [],
+        currentResultKey: "",
+        shareBlob: null,
+        shareUrl: "",
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const screens = ["homeScreen", "quizScreen", "resultScreen"];
+
+      function showScreen(id) {
+        screens.forEach((screenId) => $(screenId).classList.toggle("active", screenId === id));
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+
+      function renderQuestion() {
+        const item = questions[state.index];
+        $("counter").textContent = `第 ${state.index + 1} / ${questions.length} 题`;
+        $("meter").style.setProperty("--progress", `${(state.index / questions.length) * 100}%`);
+        $("kicker").textContent = `维度已隐藏 · DOG ${String(state.index + 1).padStart(2, "0")}`;
+        $("question").textContent = item.q;
+        $("hint").textContent = item.hint;
+        $("backBtn").style.visibility = state.index === 0 ? "hidden" : "visible";
+        $("nextBtn").textContent = state.index === questions.length - 1 ? "看结果" : "下一题";
+        $("nextBtn").disabled = state.answers[state.index] == null;
+
+        $("answers").innerHTML = "";
+        item.a.forEach((answer, answerIndex) => {
+          const button = document.createElement("button");
+          button.className = "answer";
+          if (state.answers[state.index] === answerIndex) button.classList.add("selected");
+          button.type = "button";
+          button.innerHTML = `<em>${String.fromCharCode(65 + answerIndex)}</em><div><strong>${answer.title}</strong><span>${answer.desc}</span></div>`;
+          button.addEventListener("click", () => selectAnswer(answerIndex));
+          $("answers").appendChild(button);
+        });
+      }
+
+      function selectAnswer(answerIndex) {
+        state.answers[state.index] = answerIndex;
+        renderQuestion();
+      }
+
+      function nextQuestion() {
+        if (state.answers[state.index] == null) return;
+        if (state.index < questions.length - 1) {
+          state.index += 1;
+          renderQuestion();
+          return;
+        }
+        showResult();
+      }
+
+      function calculateResult() {
+        const totals = {};
+        state.answers.forEach((answerIndex, questionIndex) => {
+          const answer = questions[questionIndex].a[answerIndex];
+          Object.entries(answer.traits).forEach(([key, value]) => {
+            totals[key] = (totals[key] || 0) + value;
+          });
+        });
+
+        const entries = Object.entries(traitProfiles)
+          .map(([key, profile]) => {
+            const allTraits = new Set([...Object.keys(totals), ...Object.keys(profile)]);
+            let distance = 0;
+            for (const trait of allTraits) {
+              distance += Math.abs((totals[trait] || 0) - (profile[trait] || 0));
+            }
+            return [key, distance];
+          })
+          .sort((a, b) => a[1] - b[1]);
+
+        const bestDistance = entries[0][1];
+        const tied = entries.filter((entry) => entry[1] === bestDistance).map((entry) => entry[0]);
+        if (tied.length === 1) return tied[0];
+        const answerHash = state.answers.reduce((sum, value, index) => sum + (value + 1) * (index + 3) * 7, 0);
+        return tied[answerHash % tied.length];
+      }
+
+      function displayCode(key) {
+        return key.toUpperCase();
+      }
+
+      function showResult() {
+        const key = calculateResult();
+        const result = types[key];
+        state.currentResultKey = key;
+        $("resultDog").textContent = `${state.dogName} 的 DBTI 是`;
+        $("resultCode").textContent = displayCode(key);
+        $("resultName").textContent = result.name;
+        $("resultVerdict").textContent = result.verdict;
+        $("resultImage").onerror = () => {
+          $("resultImage").src = "assets/results/yes-or-no.png";
+        };
+        $("resultImage").src = new URL(resultImages[key], window.location.href).href;
+        $("resultImage").alt = `${result.name}结果图`;
+        showScreen("resultScreen");
+      }
+
+      function restart() {
+        state.index = 0;
+        state.answers = [];
+        state.currentResultKey = "";
+        renderQuestion();
+        showScreen("quizScreen");
+      }
+
+      function toast(message) {
+        const el = $("toast");
+        el.textContent = message;
+        el.classList.add("show");
+        window.setTimeout(() => el.classList.remove("show"), 1800);
+      }
+
+      function shareText() {
+        const key = state.currentResultKey;
+        const result = types[key];
+        return `${state.dogName} 是 ${displayCode(key)}｜${result.name}：${result.verdict}`;
+      }
+
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error(`图片加载失败：${src}`));
+          img.src = new URL(src, window.location.href).href;
+        });
+      }
+
+      async function createShareImage() {
+        const key = state.currentResultKey;
+        const result = types[key];
+        const img = await loadImage(resultImages[key]);
+        const canvas = document.createElement("canvas");
+        canvas.width = 1080;
+        canvas.height = 1440;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#f4edf2";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#a9d9c9";
+        ctx.fillRect(0, 0, canvas.width, 360);
+        ctx.fillStyle = "#dfbd52";
+        ctx.fillRect(0, 1080, canvas.width, 360);
+        ctx.fillStyle = "#fffdf8";
+        roundRect(ctx, 70, 80, 940, 1280, 34);
+        ctx.fill();
+        ctx.drawImage(img, 140, 150, 800, 800);
+        ctx.fillStyle = "#5b9bb2";
+        ctx.font = "800 38px sans-serif";
+        ctx.fillText(displayCode(key), 140, 1010);
+        ctx.fillStyle = "#24232a";
+        ctx.font = "900 92px sans-serif";
+        ctx.fillText(result.name, 140, 1110);
+        ctx.font = "700 38px sans-serif";
+        wrapText(ctx, `${state.dogName}：${result.verdict}`, 140, 1180, 800, 52, 3);
+        return new Promise((resolve) => canvas.toBlob(resolve, "image/png", 0.95));
+      }
+
+      function roundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+
+      function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+        let line = "";
+        let lines = 0;
+        for (const char of text) {
+          const test = line + char;
+          if (ctx.measureText(test).width > maxWidth && line) {
+            ctx.fillText(line, x, y);
+            y += lineHeight;
+            lines += 1;
+            line = char;
+            if (lines >= maxLines - 1) break;
+          } else {
+            line = test;
+          }
+        }
+        if (line) ctx.fillText(line, x, y);
+      }
+
+      async function shareResult() {
+        try {
+          $("shareBtn").disabled = true;
+          $("shareBtn").textContent = "生成中...";
+          const blob = await createShareImage();
+          if (!blob) throw new Error("浏览器没有生成图片文件");
+          if (state.shareUrl) URL.revokeObjectURL(state.shareUrl);
+          state.shareBlob = blob;
+          const url = URL.createObjectURL(blob);
+          state.shareUrl = url;
+          $("sharePreview").src = url;
+          $("shareModal").classList.add("show");
+          toast("海报已生成，可以保存了。");
+          navigator.clipboard?.writeText(shareText()).catch(() => {
+            console.warn("剪贴板不可用，已跳过复制。");
+          });
+        } catch (error) {
+          console.error("分享失败：", error);
+          await navigator.clipboard?.writeText(shareText()).catch(() => {});
+          if (window.location.protocol === "file:") {
+            toast("file 模式不能导出海报，请用 localhost 或上线地址打开。");
+          } else {
+            toast("海报生成失败，已尽量复制判词。");
+          }
+        } finally {
+          $("shareBtn").disabled = false;
+          $("shareBtn").textContent = "分享给你的狗";
+        }
+      }
+
+      function saveSharePoster() {
+        if (!state.shareBlob || !state.shareUrl) {
+          toast("还没有生成海报。");
+          return;
+        }
+        try {
+          const link = document.createElement("a");
+          link.href = state.shareUrl;
+          link.download = `${state.dogName}-DBTI.png`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          toast("海报已保存。");
+        } catch (error) {
+          console.error("保存失败：", error);
+          toast("保存失败，可以长按海报保存。");
+        }
+      }
+
+      function closeShareModal() {
+        $("shareModal").classList.remove("show");
+      }
+
+      async function copyShareText() {
+        try {
+          await navigator.clipboard.writeText(shareText());
+          toast("判词已复制。");
+        } catch {
+          toast("复制失败，可以手动截图。");
+        }
+      }
+
+      $("startBtn").addEventListener("click", () => {
+        const name = $("dogNameInput").value.trim();
+        if (!name) {
+          toast("先写狗狗名字，不然没法开庭。");
+          $("dogNameInput").focus();
+          return;
+        }
+        state.dogName = name;
+        state.index = 0;
+        state.answers = [];
+        renderQuestion();
+        showScreen("quizScreen");
+      });
+
+      $("dogNameInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") $("startBtn").click();
+      });
+
+      $("backBtn").addEventListener("click", () => {
+        if (state.index === 0) return;
+        state.index -= 1;
+        renderQuestion();
+      });
+      $("nextBtn").addEventListener("click", nextQuestion);
+      $("shareBtn").addEventListener("click", shareResult);
+      $("savePosterBtn").addEventListener("click", saveSharePoster);
+      $("copyTextBtn").addEventListener("click", copyShareText);
+      $("closeShareBtn").addEventListener("click", closeShareModal);
+      $("shareModal").addEventListener("click", (event) => {
+        if (event.target === $("shareModal")) closeShareModal();
+      });
+      $("againBtn").addEventListener("click", restart);
+    </script>
+  </body>
+</html>
