@@ -693,7 +693,7 @@
               <div class="meter" aria-hidden="true"><span id="meter"></span></div>
             </div>
             <div class="quiz-body">
-              <div class="kicker" id="kicker">维度已隐藏 · DOG 01</div>
+              <div class="kicker" id="kicker">DOG 01</div>
               <h2 class="question" id="question"></h2>
               <p class="hint" id="hint"></p>
               <div class="answers" id="answers"></div>
@@ -742,22 +742,22 @@
 
     <script>
       const resultImages = {
-        "yes or no": "assets/results/yes-or-no.png",
-        "502": "assets/results/502.png",
-        drama: "assets/results/drama.png",
-        momo: "assets/results/momo.png",
-        Zzzzz: "assets/results/Zzzzz.png",
-        emo: "assets/results/emo.png",
-        dad: "assets/results/dad.png",
-        salty: "assets/results/salty.png",
-        social: "assets/results/social.png",
-        lazy: "assets/results/lazy.png",
-        taotie: "assets/results/taotie.png",
-        "404 Not Found": "assets/results/404-not-found.png",
-        Vme50: "assets/results/Vme50.png",
-        guard: "assets/results/guard.png",
-        8080: "assets/results/8080.png",
-        shift: "assets/results/shift.png",
+        "yes or no": "assets/results/yes-or-no.jpg",
+        "502": "assets/results/502.jpg",
+        drama: "assets/results/drama.jpg",
+        momo: "assets/results/momo.jpg",
+        Zzzzz: "assets/results/Zzzzz.jpg",
+        emo: "assets/results/emo.jpg",
+        dad: "assets/results/dad.jpg",
+        salty: "assets/results/salty.jpg",
+        social: "assets/results/social.jpg",
+        lazy: "assets/results/lazy.jpg",
+        taotie: "assets/results/taotie.jpg",
+        "404 Not Found": "assets/results/404-not-found.jpg",
+        Vme50: "assets/results/Vme50.jpg",
+        guard: "assets/results/guard.jpg",
+        8080: "assets/results/8080.jpg",
+        shift: "assets/results/shift.jpg",
       };
 
       const types = {
@@ -960,7 +960,7 @@
         const item = questions[state.index];
         $("counter").textContent = `第 ${state.index + 1} / ${questions.length} 题`;
         $("meter").style.setProperty("--progress", `${(state.index / questions.length) * 100}%`);
-        $("kicker").textContent = `维度已隐藏 · DOG ${String(state.index + 1).padStart(2, "0")}`;
+        $("kicker").textContent = `DOG ${String(state.index + 1).padStart(2, "0")}`;
         $("question").textContent = item.q;
         $("hint").textContent = item.hint;
         $("backBtn").style.visibility = state.index === 0 ? "hidden" : "visible";
@@ -1034,7 +1034,7 @@
         $("resultName").textContent = result.name;
         $("resultVerdict").textContent = result.verdict;
         $("resultImage").onerror = () => {
-          $("resultImage").src = "assets/results/yes-or-no.png";
+          $("resultImage").src = "assets/results/yes-or-no.jpg";
         };
         $("resultImage").src = new URL(resultImages[key], window.location.href).href;
         $("resultImage").alt = `${result.name}结果图`;
