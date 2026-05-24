@@ -189,6 +189,11 @@
         gap: 10px;
       }
 
+      .name-row.stacked {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+      }
+
       .name-row input {
         min-width: 0;
         flex: 1;
@@ -555,7 +560,9 @@
           font-size: 15px;
         }
 
-        .name-row {
+        .name-row,
+        .name-row.stacked {
+          display: flex;
           flex-direction: column;
         }
 
@@ -675,8 +682,9 @@
             </p>
             <div class="start-card">
               <label class="name-label" for="dogNameInput">先交代一下狗狗姓名</label>
-              <div class="name-row">
-                <input id="dogNameInput" maxlength="12" placeholder="比如：土豆" autocomplete="off" />
+              <div class="name-row stacked">
+                <input id="dogNameInput" maxlength="12" placeholder="宠物昵称，比如：土豆" autocomplete="off" />
+                <input id="breedInput" maxlength="18" placeholder="品种，比如：柯基、金毛、田园犬" autocomplete="off" />
                 <button class="primary-btn" id="startBtn" type="button">点击测试</button>
               </div>
             </div>
@@ -741,7 +749,7 @@
     </div>
 
     <script>
-      const resultImages = {
+      const resultImageFiles = {
         "yes or no": "assets/results/yes-or-no.jpg",
         "502": "assets/results/502.jpg",
         drama: "assets/results/drama.jpg",
@@ -759,6 +767,53 @@
         8080: "assets/results/8080.jpg",
         shift: "assets/results/shift.jpg",
       };
+
+      const breedOptions = [
+        { key: "poodle", name: "贵宾犬", aliases: ["贵宾犬", "贵宾", "泰迪"] },
+        { key: "chinese-rural-dog", name: "中华田园犬", aliases: ["中华田园犬", "土狗", "田园犬"] },
+        { key: "golden-retriever", name: "金毛寻回犬", aliases: ["金毛寻回犬", "金毛"] },
+        { key: "labrador-retriever", name: "拉布拉多寻回犬", aliases: ["拉布拉多寻回犬", "拉布拉多", "拉拉"] },
+        { key: "corgi", name: "威尔士柯基犬", aliases: ["威尔士柯基犬", "柯基"] },
+        { key: "shiba-inu", name: "日本柴犬", aliases: ["日本柴犬", "柴犬"] },
+        { key: "border-collie", name: "边境牧羊犬", aliases: ["边境牧羊犬", "边牧"] },
+        { key: "french-bulldog", name: "法国斗牛犬", aliases: ["法国斗牛犬", "法斗"] },
+        { key: "samoyed", name: "萨摩耶犬", aliases: ["萨摩耶犬", "萨摩"] },
+        { key: "siberian-husky", name: "西伯利亚雪橇犬", aliases: ["西伯利亚雪橇犬", "哈士奇", "二哈"] },
+        { key: "bichon-frise", name: "比熊犬", aliases: ["比熊犬", "比熊"] },
+        { key: "miniature-schnauzer", name: "迷你雪纳瑞", aliases: ["迷你雪纳瑞", "雪纳瑞"] },
+        { key: "pug", name: "巴哥犬", aliases: ["巴哥犬", "巴哥"] },
+        { key: "chihuahua", name: "吉娃娃犬", aliases: ["吉娃娃犬", "吉娃娃"] },
+        { key: "yorkshire-terrier", name: "约克夏梗", aliases: ["约克夏梗", "约克夏"] },
+        { key: "alaskan-malamute", name: "阿拉斯加雪橇犬", aliases: ["阿拉斯加雪橇犬", "阿拉斯加", "阿拉"] },
+        { key: "pomeranian", name: "博美犬", aliases: ["博美犬", "博美"] },
+        { key: "german-shepherd", name: "德国牧羊犬", aliases: ["德国牧羊犬", "德牧", "黑背"] },
+        { key: "kunming-dog", name: "昆明犬", aliases: ["昆明犬"] },
+        { key: "shih-tzu", name: "西施犬", aliases: ["西施犬", "西施"] },
+        { key: "shetland-sheepdog", name: "喜乐蒂牧羊犬", aliases: ["喜乐蒂牧羊犬", "喜乐蒂"] },
+        { key: "maltese", name: "马尔济斯犬", aliases: ["马尔济斯犬", "马尔济斯"] },
+        { key: "standard-poodle", name: "巨型贵宾犬", aliases: ["巨型贵宾犬", "巨贵"] },
+        { key: "australian-shepherd", name: "澳大利亚牧羊犬", aliases: ["澳大利亚牧羊犬", "澳牧"] },
+        { key: "chow-chow", name: "松狮犬", aliases: ["松狮犬", "松狮"] },
+        { key: "native-chow-chow", name: "本土松狮犬", aliases: ["本土松狮犬", "土松"] },
+      ];
+
+      const breedAliases = new Map(breedOptions.flatMap((breed) => breed.aliases.map((alias) => [normalizeBreed(alias), breed])));
+
+      function normalizeBreed(value) {
+        return value.trim().toLowerCase().replace(/[\s·・,，、]/g, "");
+      }
+
+      function matchBreed(value) {
+        const normalized = normalizeBreed(value);
+        if (!normalized) return null;
+        return breedAliases.get(normalized) || null;
+      }
+
+      function resultImagePath(key, breed = state.breed) {
+        const file = resultImageFiles[key] || resultImageFiles["yes or no"];
+        if (!breed) return file;
+        return "assets/breeds/" + breed.key + "/" + file.split("/").pop();
+      }
 
       const types = {
         "yes or no": {
@@ -846,7 +901,7 @@
         shift: { food: 8, chaos: 2, destroy: 5, escape: 4 },
       };
 
-      const questions = [
+      const baseQuestions = [
         {
           q: "你的狗逛公园时，突然飘来一阵陌生的香味，它会？",
           hint: "香味可能来自小吃摊、其他狗、花丛，总之是未知诱惑",
@@ -939,10 +994,67 @@
         },
       ];
 
+      const questionTemplates = [
+        ["{{name}}看到外卖袋突然出现在桌边，会先做什么？", "外卖袋不是食物，但在它眼里很像人生机会。", [["坐得端端正正等你分一口", "礼貌但坚定，眼神已经开始排队。", { food: 4, control: 1, calm: 1 }], ["偷偷靠近袋子闻半天", "先侦查，再判断是否值得冒险。", { brain: 3, stealth: 2, food: 1 }], ["直接扒拉袋子试图开箱", "没有什么包装能阻挡它的热情。", { destroy: 3, chaos: 2, food: 1 }]]],
+        ["{{name}}在公园遇到一只陌生狗，它更可能？", "社交场上，很多狗会露出真实底色。", [["冲过去打招呼", "像老同学重逢，完全不需要铺垫。", { social: 4, energy: 2, cling: 1 }], ["躲到你腿后观察", "先看局势，再决定要不要营业。", { anxious: 3, stealth: 2, guard: 1 }], ["站住不动等对方先表态", "气场很足，主打一个我不先低头。", { control: 3, guard: 2, calm: 1 }]]],
+        ["{{name}}听见你说洗澡两个字，会？", "有些词不需要解释，狗已经懂了。", [["立刻消失", "刚才还在眼前，现在像没加载出来。", { stealth: 4, escape: 2, anxious: 1 }], ["原地开始委屈", "澡还没洗，戏已经开演。", { drama: 4, anxious: 2, cling: 1 }], ["无所谓地继续躺着", "洗不洗都行，别耽误它躺。", { lazy: 4, calm: 2, sleep: 1 }]]],
+        ["{{name}}发现你要出门但不带它，会？", "门口是很多狗的情绪分水岭。", [["贴着你不让走", "像一个毛茸茸的门禁系统。", { cling: 4, anxious: 2 }], ["叼玩具过来转移话题", "它觉得问题可以通过玩解决。", { social: 3, energy: 2, brain: 1 }], ["躺下装作不在乎", "表面淡定，心里已经记账。", { grudge: 3, lazy: 2, calm: 1 }]]],
+        ["{{name}}看到地上有一个空塑料瓶，会？", "空瓶子在狗界可能是一种高配玩具。", [["叼走当战利品", "不值钱，但归属权很重要。", { control: 3, destroy: 2, energy: 1 }], ["绕着瓶子检查", "像在做危险品排查。", { brain: 4, guard: 2 }], ["一脚踢开继续走", "对这种低级诱惑毫无兴趣。", { lazy: 3, calm: 2, stealth: 1 }]]],
+        ["{{name}}被你少摸了一会儿，通常会？", "贴贴配额不足时，狗会自带提醒系统。", [["用爪子扒你", "温柔提醒，手不能停。", { cling: 5, jealous: 1 }], ["自己找地方睡", "算了，睡觉比较可靠。", { sleep: 4, lazy: 2 }], ["去咬玩具制造动静", "没有关注，那就自己生产关注。", { chaos: 3, destroy: 2, energy: 1 }]]],
+        ["{{name}}看到你拿出牵引绳，会？", "牵引绳一响，很多故事就开始了。", [["兴奋到原地转圈", "身体已经出门，灵魂还在等你穿鞋。", { energy: 5, social: 1 }], ["慢吞吞走过来", "愿意出门，但不愿意太激动。", { lazy: 3, calm: 2 }], ["叼着绳子往门口冲", "它觉得今天由它负责导航。", { escape: 4, control: 2, energy: 1 }]]],
+        ["{{name}}遇到一点小挫折，比如玩具滚到沙发下，会？", "问题解决方式，暴露狗格。", [["看着你求救", "它相信人类有义务处理这个事故。", { cling: 3, brain: 2 }], ["自己疯狂扒拉", "只要够努力，沙发也能被移动。", { destroy: 4, energy: 2 }], ["直接放弃", "得不到就算了，睡觉也不错。", { lazy: 4, calm: 2 }]]],
+        ["{{name}}听见楼道有声音，会？", "楼道属于小区情报中心。", [["立刻跑去门口", "安保岗一分钟都不能空。", { guard: 5, control: 1 }], ["抬头听一下又睡", "确认没瓜，继续休眠。", { sleep: 3, calm: 2, lazy: 1 }], ["先看你反应", "你紧张它就紧张，你淡定它也淡定。", { brain: 3, anxious: 2, cling: 1 }]]],
+        ["{{name}}在家无聊时最像？", "无聊不是状态，是一场预谋。", [["找你玩", "它不无聊，是你还没上线。", { social: 4, cling: 2 }], ["找东西拆", "生活需要一点重建，也需要一点破坏。", { destroy: 5, chaos: 1 }], ["找地方睡", "无聊的终极解决方案是睡着。", { sleep: 4, lazy: 2 }]]],
+      ];
+
+      function buildQuestionBank() {
+        const bank = [...baseQuestions];
+        let i = 0;
+        while (bank.length < 100) {
+          const [q, hint, answers] = questionTemplates[i % questionTemplates.length];
+          const round = Math.floor(i / questionTemplates.length) + 1;
+          bank.push({
+            q,
+            hint: round === 1 ? hint : hint + " 第 " + round + " 次测，直觉也算答案。",
+            a: answers.map(([title, desc, traits]) => ({ title, desc, traits })),
+          });
+          i += 1;
+        }
+        return bank;
+      }
+
+      const questionBank = buildQuestionBank();
+
+      function getRandomQuestions(arr, count) {
+        const shuffled = [...arr];
+        for (let i = shuffled.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled.slice(0, count);
+      }
+
+      function personalizeText(text) {
+        const name = state.dogName || "它";
+        return text
+          .replaceAll("{{name}}", name)
+          .replaceAll("你的狗狗", name)
+          .replaceAll("你家狗狗", name)
+          .replaceAll("你的狗", name)
+          .replaceAll("你家狗", name)
+          .replaceAll("给狗", `给${name}`)
+          .replaceAll("带狗", `带${name}`)
+          .replaceAll("它", name)
+          .replaceAll("狗狗", name);
+      }
+
       const state = {
         dogName: "",
+        breedInput: "",
+        breed: null,
         index: 0,
         answers: [],
+        questions: [],
         currentResultKey: "",
         shareBlob: null,
         shareUrl: "",
@@ -957,14 +1069,14 @@
       }
 
       function renderQuestion() {
-        const item = questions[state.index];
-        $("counter").textContent = `第 ${state.index + 1} / ${questions.length} 题`;
-        $("meter").style.setProperty("--progress", `${(state.index / questions.length) * 100}%`);
+        const item = state.questions[state.index];
+        $("counter").textContent = `第 ${state.index + 1} / ${state.questions.length} 题`;
+        $("meter").style.setProperty("--progress", `${(state.index / state.questions.length) * 100}%`);
         $("kicker").textContent = `DOG ${String(state.index + 1).padStart(2, "0")}`;
-        $("question").textContent = item.q;
-        $("hint").textContent = item.hint;
+        $("question").textContent = personalizeText(item.q);
+        $("hint").textContent = personalizeText(item.hint);
         $("backBtn").style.visibility = state.index === 0 ? "hidden" : "visible";
-        $("nextBtn").textContent = state.index === questions.length - 1 ? "看结果" : "下一题";
+        $("nextBtn").textContent = state.index === state.questions.length - 1 ? "看结果" : "下一题";
         $("nextBtn").disabled = state.answers[state.index] == null;
 
         $("answers").innerHTML = "";
@@ -973,7 +1085,7 @@
           button.className = "answer";
           if (state.answers[state.index] === answerIndex) button.classList.add("selected");
           button.type = "button";
-          button.innerHTML = `<em>${String.fromCharCode(65 + answerIndex)}</em><div><strong>${answer.title}</strong><span>${answer.desc}</span></div>`;
+          button.innerHTML = `<em>${String.fromCharCode(65 + answerIndex)}</em><div><strong>${personalizeText(answer.title)}</strong><span>${personalizeText(answer.desc)}</span></div>`;
           button.addEventListener("click", () => selectAnswer(answerIndex));
           $("answers").appendChild(button);
         });
@@ -986,7 +1098,7 @@
 
       function nextQuestion() {
         if (state.answers[state.index] == null) return;
-        if (state.index < questions.length - 1) {
+        if (state.index < state.questions.length - 1) {
           state.index += 1;
           renderQuestion();
           return;
@@ -997,7 +1109,7 @@
       function calculateResult() {
         const totals = {};
         state.answers.forEach((answerIndex, questionIndex) => {
-          const answer = questions[questionIndex].a[answerIndex];
+          const answer = state.questions[questionIndex].a[answerIndex];
           Object.entries(answer.traits).forEach(([key, value]) => {
             totals[key] = (totals[key] || 0) + value;
           });
@@ -1029,14 +1141,15 @@
         const key = calculateResult();
         const result = types[key];
         state.currentResultKey = key;
-        $("resultDog").textContent = `${state.dogName} 的 DBTI 是`;
+        $("resultDog").textContent = `${state.dogName}的 DBTI 是`;
         $("resultCode").textContent = displayCode(key);
         $("resultName").textContent = result.name;
-        $("resultVerdict").textContent = result.verdict;
+        $("resultVerdict").textContent = personalizeText(result.verdict);
+        $("shareBtn").textContent = `分享给${state.dogName}`;
         $("resultImage").onerror = () => {
           $("resultImage").src = "assets/results/yes-or-no.jpg";
         };
-        $("resultImage").src = new URL(resultImages[key], window.location.href).href;
+        $("resultImage").src = new URL(resultImagePath(key), window.location.href).href;
         $("resultImage").alt = `${result.name}结果图`;
         showScreen("resultScreen");
       }
@@ -1044,6 +1157,7 @@
       function restart() {
         state.index = 0;
         state.answers = [];
+        state.questions = getRandomQuestions(questionBank, 10);
         state.currentResultKey = "";
         renderQuestion();
         showScreen("quizScreen");
@@ -1059,7 +1173,7 @@
       function shareText() {
         const key = state.currentResultKey;
         const result = types[key];
-        return `${state.dogName} 是 ${displayCode(key)}｜${result.name}：${result.verdict}`;
+        return `${state.dogName} 是 ${displayCode(key)}｜${result.name}：${personalizeText(result.verdict)}`;
       }
 
       function loadImage(src) {
@@ -1074,7 +1188,12 @@
       async function createShareImage() {
         const key = state.currentResultKey;
         const result = types[key];
-        const img = await loadImage(resultImages[key]);
+        let img;
+        try {
+          img = await loadImage(resultImagePath(key));
+        } catch {
+          img = await loadImage(resultImagePath(key, null));
+        }
         const canvas = document.createElement("canvas");
         canvas.width = 1080;
         canvas.height = 1440;
@@ -1096,7 +1215,7 @@
         ctx.font = "900 92px sans-serif";
         ctx.fillText(result.name, 140, 1110);
         ctx.font = "700 38px sans-serif";
-        wrapText(ctx, `${state.dogName}：${result.verdict}`, 140, 1180, 800, 52, 3);
+        wrapText(ctx, `${state.dogName}：${personalizeText(result.verdict)}`, 140, 1180, 800, 52, 3);
         return new Promise((resolve) => canvas.toBlob(resolve, "image/png", 0.95));
       }
 
@@ -1154,7 +1273,7 @@
           }
         } finally {
           $("shareBtn").disabled = false;
-          $("shareBtn").textContent = "分享给你的狗";
+          $("shareBtn").textContent = `分享给${state.dogName}`;
         }
       }
 
@@ -1166,7 +1285,7 @@
         try {
           const link = document.createElement("a");
           link.href = state.shareUrl;
-          link.download = `${state.dogName}-DBTI.png`;
+          link.download = `${state.dogName}-${state.breed?.name || "DBTI"}.png`;
           document.body.appendChild(link);
           link.click();
           link.remove();
@@ -1198,13 +1317,20 @@
           return;
         }
         state.dogName = name;
+        state.breedInput = $("breedInput").value.trim();
+        state.breed = matchBreed(state.breedInput);
         state.index = 0;
         state.answers = [];
+        state.questions = getRandomQuestions(questionBank, 10);
         renderQuestion();
         showScreen("quizScreen");
       });
 
       $("dogNameInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") $("startBtn").click();
+      });
+
+      $("breedInput").addEventListener("keydown", (event) => {
         if (event.key === "Enter") $("startBtn").click();
       });
 
