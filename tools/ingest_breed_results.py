@@ -111,7 +111,7 @@ def update_index(available: list[str]) -> None:
     replacement = "const availableBreedResultKeys = new Set([\n"
     replacement += "".join(f'        "{key}",\n' for key in available)
     replacement += "      ]);"
-    pattern = r"const availableBreedResultKeys = new Set\(\[\n.*?\n      \]\);"
+    pattern = r"const availableBreedResultKeys = new Set\(\[[\s\S]*?\]\);"
     updated, count = re.subn(pattern, replacement, content, flags=re.S)
     if count != 1:
         raise RuntimeError("Could not update availableBreedResultKeys in index.html")
@@ -148,4 +148,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
