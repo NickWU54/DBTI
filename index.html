@@ -169,7 +169,7 @@
 
       .start-card {
         max-width: none;
-        padding: 16px;
+        padding: 18px;
         border: 1px solid var(--line);
         border-radius: 12px;
         background: var(--card);
@@ -191,20 +191,26 @@
 
       .name-row.stacked {
         display: grid;
-        grid-template-columns: 1fr 1fr auto;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: stretch;
       }
 
       .name-row input {
         min-width: 0;
         flex: 1;
-        height: 48px;
-        padding: 0 14px;
+        height: 54px;
+        padding: 0 16px;
         border: 1px solid var(--line);
         border-radius: 8px;
         color: var(--ink);
         background: #fffdf8;
         outline: 0;
         font-weight: 850;
+      }
+
+      .name-row.stacked .primary-btn {
+        grid-column: 1 / -1;
+        min-height: 54px;
       }
 
       .primary-btn,
@@ -564,6 +570,18 @@
         .name-row.stacked {
           display: flex;
           flex-direction: column;
+          gap: 12px;
+        }
+
+        .start-card {
+          padding: 18px;
+        }
+
+        .name-row input,
+        .name-row.stacked .primary-btn {
+          width: 100%;
+          min-height: 56px;
+          font-size: 16px;
         }
 
         .quiz-shell,
@@ -811,8 +829,7 @@
 
       function resultImagePath(key, breed = state.breed) {
         const file = resultImageFiles[key] || resultImageFiles["yes or no"];
-        if (!breed) return file;
-        return "assets/breeds/" + breed.key + "/" + file.split("/").pop();
+        return file;
       }
 
       const types = {
@@ -1012,10 +1029,9 @@
         let i = 0;
         while (bank.length < 100) {
           const [q, hint, answers] = questionTemplates[i % questionTemplates.length];
-          const round = Math.floor(i / questionTemplates.length) + 1;
           bank.push({
             q,
-            hint: round === 1 ? hint : hint + " 第 " + round + " 次测，直觉也算答案。",
+            hint,
             a: answers.map(([title, desc, traits]) => ({ title, desc, traits })),
           });
           i += 1;
@@ -1048,6 +1064,19 @@
           .replaceAll("狗狗", name);
       }
 
+      function polishQuestionText(text) {
+        return text
+          .replaceAll("，会先做什么？", "，第一步多半是？")
+          .replaceAll("，会？", "，接下来是什么画风？")
+          .replaceAll("通常会？", "通常是什么反应？")
+          .replaceAll("它会？", "它是什么反应？")
+          .replaceAll("更可能？", "更像哪种反应？")
+          .replaceAll("最像？", "更像哪种状态？")
+          .replaceAll("会选择？", "一般怎么选？")
+          .replaceAll("第一反应是？", "第一反应更接近哪种？")
+          .replace(/会？$/u, "会是什么反应？");
+      }
+
       const state = {
         dogName: "",
         breedInput: "",
@@ -1073,7 +1102,7 @@
         $("counter").textContent = `第 ${state.index + 1} / ${state.questions.length} 题`;
         $("meter").style.setProperty("--progress", `${(state.index / state.questions.length) * 100}%`);
         $("kicker").textContent = `DOG ${String(state.index + 1).padStart(2, "0")}`;
-        $("question").textContent = personalizeText(item.q);
+        $("question").textContent = polishQuestionText(personalizeText(item.q));
         $("hint").textContent = personalizeText(item.hint);
         $("backBtn").style.visibility = state.index === 0 ? "hidden" : "visible";
         $("nextBtn").textContent = state.index === state.questions.length - 1 ? "看结果" : "下一题";
