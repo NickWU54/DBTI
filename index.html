@@ -786,6 +786,9 @@
         shift: "assets/results/shift.jpg",
       };
 
+      const availableBreedResultKeys = new Set([
+      ]);
+
       const breedOptions = [
         { key: "poodle", name: "贵宾犬", aliases: ["贵宾犬", "贵宾", "泰迪"] },
         { key: "chinese-rural-dog", name: "中华田园犬", aliases: ["中华田园犬", "土狗", "田园犬"] },
@@ -829,6 +832,13 @@
 
       function resultImagePath(key, breed = state.breed) {
         const file = resultImageFiles[key] || resultImageFiles["yes or no"];
+        if (breed) {
+          const fileName = file.split("/").pop();
+          const breedResultKey = `${breed.key}/${fileName}`;
+          if (availableBreedResultKeys.has(breedResultKey)) {
+            return `assets/breed-results/${breedResultKey}`;
+          }
+        }
         return file;
       }
 
